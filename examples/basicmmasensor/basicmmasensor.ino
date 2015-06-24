@@ -31,7 +31,11 @@
 #include "Wire.h"
 #include "mma8652.h"
 
+#define LED 14
+
 // Accelerometer object. Interruptable pin = internal ACC_INT pin
+#define ACC_INT  10 // Accelerometer interrupt pin
+#define ACC_POWER_PIN 11 // Power pin from the host
 MMA8652 accel = MMA8652(ACC_INT);
 
 // Used to read statuses and source registers
@@ -143,4 +147,3 @@ void loop()
     // Still doing something until the interrupt pin goes high again
   }
 }
-
