@@ -31,11 +31,9 @@
 #include "Wire.h"
 #include "mma8652.h"
 
-#define LED 14
-
 // Accelerometer object. Interruptable pin = internal ACC_INT pin
-#define ACC_INT  10 // Accelerometer interrupt pin
-#define ACC_POWER_PIN 11 // Power pin from the host
+#define ACC_INT  11 // Accelerometer interrupt pin
+#define ACC_POWER_PIN 9 // Power pin from the host
 MMA8652 accel = MMA8652(ACC_INT);
 
 // Used to read statuses and source registers
@@ -48,8 +46,8 @@ uint8_t status, intSource;
  */
 void accEvent(void)
 {
-  digitalWrite(LED, !digitalRead(LED));
-  //panstamp.wakeUp();
+  //digitalWrite(LED, !digitalRead(LED));
+  panstamp.wakeUp();
 }
 
 /**
@@ -57,31 +55,35 @@ void accEvent(void)
  */
 void setup()
 {
-  Serial.begin(9600);
-  Serial.println("Starting...");
+//  Serial.begin(38400);
+//  Serial.println("Starting...");
 
   pinMode(LED, OUTPUT);
 
   // Turn ON accelerometer
+  pinMode(ACC_POWER_PIN, OUTPUT);
   digitalWrite(ACC_POWER_PIN, HIGH);
   delay(100);
-  
+
   // Init accelerometer
   accel.init();
   delay(1);
   
   // Enable single-tap detection interruption
-  accel.enableTapInt(0x10);
+  //accel.enableTapInt(0x10);
+  accel.enableTapInt(0);
   delay(1);
   // Enable Portrait/Landscape orientation interrupt
   //accel.enablePlInt();
   delay(1);
   // Enable Free-Fall detection interrupt
-  accel.enableFreeFallInt(0x30);
+  //accel.enableFreeFallInt(0x30);
+  //accel.enableFreeFallInt(0);
   delay(1);
 
   // Declare custom ISR
   accel.attachInterrupt(accEvent);
+
 }
 
 /**
@@ -92,9 +94,9 @@ void loop()
   // Go to sleep
   digitalWrite(LED, LOW);
   accel.sleep();    // Accelerometer in sleep mode
-  //panstamp.sleep(); // panStamp in sleep mode
+  panstamp.sleep(); // panStamp in sleep mode
   digitalWrite(LED, HIGH);
-    
+
   /**
    * We could be polling for an ACC event but we prefer to be interrupted instead
    * If you want to display all the above Serial.prints correctly then comment
@@ -116,7 +118,8 @@ void loop()
   Serial.print("Z axis : ");
   Serial.println(accel.axis.z);
   */
-  
+
+/*  
   // Portrait/Landscape orientation interrupt?
   if(intSource & SRC_LNDPRT_MASK)
   {
@@ -146,4 +149,6 @@ void loop()
   {
     // Still doing something until the interrupt pin goes high again
   }
+*/
 }
+
