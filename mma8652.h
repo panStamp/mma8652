@@ -67,6 +67,8 @@ class MMA8652
      */
     uint8_t ctrlReg4;
       
+    TwoWire *_i2cPort;
+
     /**
      * read
      * 
@@ -117,7 +119,7 @@ class MMA8652
      * 
      * Initialize MMA8652 sensor
      */
-    void init(void);
+    void init(TwoWire &wirePort = Wire);
 
     /**
      * attachInterrupt

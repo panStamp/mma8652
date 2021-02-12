@@ -30,9 +30,9 @@
  * 
  * Initialize MMA8652 sensor
  */
-void MMA8652::init(void)
+void MMA8652::init(TwoWire &wirePort)
 {
-  Wire.begin();
+  _i2cPort = &wirePort;
   ctrlReg4 = 0;
   
   // Place MMA8652 in standby mode
@@ -63,21 +63,21 @@ void MMA8652::init(void)
 
 /**
  * read
- * 
+ *
  * Read single byte from register
- * 
+ *
  * @param address  Register address
  */
 uint8_t MMA8652::read(uint8_t address)
 {
-  Wire.beginTransmission(MMA8652_CTRL_ID_DEFAULT);
-  Wire.write(address);
-  Wire.endTransmission(false);
-  
-  Wire.requestFrom((int)MMA8652_CTRL_ID_DEFAULT, (int)1);
-  while(!Wire.available());
-  
-  return Wire.read();
+  _i2cPort->beginTransmission(MMA8652_CTRL_ID_DEFAULT);
+  _i2cPort->write(address);
+  _i2cPort->endTransmission(false);
+
+  _i2cPort->requestFrom((int)MMA8652_CTRL_ID_DEFAULT, (int)1);
+  while(!_i2cPort->available());
+
+  return _i2cPort->read();
 }
 
 /**
@@ -94,17 +94,17 @@ uint8_t MMA8652::read(uint8_t address)
 uint8_t MMA8652::read(uint8_t address, uint8_t *buffer, uint8_t length)
 {
   uint8_t i;
-  
-  Wire.beginTransmission(MMA8652_CTRL_ID_DEFAULT);
-  Wire.write(address);
-  Wire.endTransmission(false);
-  
-  Wire.requestFrom((int)MMA8652_CTRL_ID_DEFAULT, (int)length);
+
+  _i2cPort->beginTransmission(MMA8652_CTRL_ID_DEFAULT);
+  _i2cPort->write(address);
+  _i2cPort->endTransmission(false);
+
+  _i2cPort->requestFrom((int)MMA8652_CTRL_ID_DEFAULT, (int)length);
 
   for(i=0 ; i<length ; i++)
   {
-    while(!Wire.available());
-    buffer[i] = Wire.read();
+    while(!_i2cPort->available());
+    buffer[i] = _i2cPort->read();
   }
   
   return i;
@@ -120,10 +120,10 @@ uint8_t MMA8652::read(uint8_t address, uint8_t *buffer, uint8_t length)
  */
 void MMA8652::write(uint8_t address, uint8_t data)
 {
-  Wire.beginTransmission(MMA8652_CTRL_ID_DEFAULT);
-  Wire.write(address);
-  Wire.write(data);
-  Wire.endTransmission();
+  _i2cPort->beginTransmission(MMA8652_CTRL_ID_DEFAULT);
+  _i2cPort->write(address);
+  _i2cPort->write(data);
+  _i2cPort->endTransmission();
 }
 
 /**
